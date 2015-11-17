@@ -3,7 +3,6 @@ package stan.mouse;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 public class Server
@@ -13,20 +12,17 @@ public class Server
     public static void main(String[] args) throws SocketException, IOException
     {
         DatagramSocket serverSocket = new DatagramSocket(serverPort);
-        byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
+        byte[] receiveData = new byte[11];
         while(true)
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             serverSocket.receive(receivePacket);
             String sentence = new String( receivePacket.getData());
-            System.out.println("RECEIVED: " + sentence);
-            InetAddress IPAddress = receivePacket.getAddress();
-            int port = receivePacket.getPort();
-            String capitalizedSentence = sentence.toUpperCase();
-            sendData = capitalizedSentence.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-            serverSocket.send(sendPacket);
+            String[] OrientationData = sentence.split("/");
+            float x = Float.parseFloat(OrientationData[0]);
+            float y = Float.parseFloat(OrientationData[1]);
+            float z = Float.parseFloat(OrientationData[2]);
+            System.out.println("RECEIVED: " + x + " " + y + " " + z + " ]");
         }
     }
     
