@@ -12,9 +12,9 @@ public class Server
     public static void main(String[] args) throws SocketException, IOException
     {
         DatagramSocket serverSocket = new DatagramSocket(serverPort);
-        byte[] receiveData = new byte[11];
         while(true)
         {
+            byte[] receiveData = new byte[11];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             serverSocket.receive(receivePacket);
             String sentence = new String( receivePacket.getData());
@@ -22,7 +22,7 @@ public class Server
             float x = Float.parseFloat(OrientationData[0]);
             float y = Float.parseFloat(OrientationData[1]);
             float z = Float.parseFloat(OrientationData[2]);
-            System.out.println("RECEIVED: " + x + " " + y + " " + z + " ]");
+            System.out.println("RECEIVED: " + x + "\t" + y + "\t" + z + "\t]");
         }
     }
     
