@@ -17,8 +17,9 @@ public class Server
     static int mouseY = 0;
     static Cursor cursor;
     static List<Integer> xTemp;
-    static int tempListSize = 4;
-    static int differenceSize = 85;
+    static List<Integer> yTemp;
+    static int tempListSize = 6;
+    static int differenceSize = 25;
     static int summ = 0;
     
     public static void main(String[] args) throws SocketException, IOException, AWTException, InterruptedException
@@ -27,9 +28,11 @@ public class Server
         int widthScreen = (int)screenSize.getWidth();
         int heightScreen = (int)screenSize.getHeight();
         xTemp = new ArrayList<>();
+        yTemp = new ArrayList<>();
             for(int i=0; i<tempListSize-1; i++)
             {
                 xTemp.add(0);
+                yTemp.add(0);
             }
         System.out.println("width: " + widthScreen + "\t" + "height: " + heightScreen);
         cursor = new Cursor(0, 500, widthScreen, heightScreen);
@@ -43,54 +46,100 @@ public class Server
             String[] OrientationData = sentence.split("/");
             float x = Float.parseFloat(OrientationData[0]);
             float y = Float.parseFloat(OrientationData[1]);
-//            float z = Float.parseFloat(OrientationData[2]);
-//            System.out.println("RECEIVED: " + x + "\t" + y + "\t" + z + "\t]");
-//            System.out.println("RECEIVED: " + x + "\t" + y + "\t]");
-            if(x<0)
+            y *= -1;
+            if(x<0 || y<0)
             {
-                x+=3124*2;
+                
+                continue;
             }
+            
             int xForMouse = (int)x;
+            int yForMouse = (int)y;
                 xTemp.add((int)x);
-//            if(xTemp.size()<tempListSize)
-//            {
-//                continue;
-//            }
+                yTemp.add((int)y);
             for(int i=0; i<xTemp.size(); i++)
             {
                 xForMouse += xTemp.get(i);
+                yForMouse += yTemp.get(i);
             }
             xTemp.remove(0);
-//            xTemp.clear();
-//            xForMouse /= tempListSize;
+            yTemp.remove(0);
+            xForMouse /= tempListSize;
+            yForMouse /= tempListSize;
             
-//            System.out.println("xForMouse: " + xForMouse);
-//            int difference = Math.abs( Math.abs(xForMouse)-Math.abs(mouseX) );
             boolean flag = false;
-            int difference = Math.abs( xForMouse - mouseX );
-            if(xForMouse > mouseX + differenceSize)
+            if(checkX(xForMouse))
             {
-                if(!cursor.checkMaxX())
-                {
-                    cursor.changeX(5 * ((difference/differenceSize)+1));
-                    flag = true;
-                }
+                flag = true;
+                mouseX = xForMouse;
+                System.out.println("new x mouse: " + mouseX);
             }
-            else if(xForMouse < mouseX - differenceSize)
+            if(checkY(yForMouse))
             {
-                if(!cursor.checkMinX())
-                {
-                    cursor.changeX(-5 * ((difference/differenceSize)+1));
-                    flag = true;
-                }
+                flag = true;
+                mouseY = yForMouse;
+                System.out.println("new y mouse: " + mouseY);
             }
             if(flag)
             {
-                mouseX = xForMouse;
-                System.out.println("new x mouse: " + mouseX);
                 cursor.move();
             }
         }
     }
     
+    static int checkCursorMouseCoordinate(int cx, int mx)
+    {
+            int difference = Math.abs( cx - mx );
+            if(cx > mx + differenceSize)
+            {
+                return ((difference/differenceSize)+1);
+            }
+            else if(cx < mx - differenceSize)
+            {
+                return -((difference/differenceSize)+1);
+            }
+            return 0;
+    }
+    static boolean checkX(int x)
+    {
+        int difference = checkCursorMouseCoordinate(x, mouseX);
+        if(difference > 0)
+        {
+            if(!cursor.checkMaxX())
+            {
+                cursor.changeX(5 * difference);
+                return true;
+            }
+        }
+        else if(difference < 0)
+        {
+            if(!cursor.checkMinX())
+            {
+                cursor.changeX(5 * difference);
+                return true;
+            }
+        }
+        return false;
+    }
+    static boolean checkY(int y)
+    {
+        int difference = checkCursorMouseCoordinate(y, mouseY);
+        if(difference > 0)
+        {
+            if(!cursor.checkMaxY())
+            {
+                cursor.changeY(5 * difference);
+                return true;
+            }
+        }
+        else if(difference < 0)
+        {
+            if(!cursor.checkMinY())
+            {
+                cursor.changeY(5 * difference);
+                return true;
+            }
+        }
+        return false;
+    }
 }

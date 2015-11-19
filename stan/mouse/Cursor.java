@@ -28,10 +28,22 @@ public class Cursor
     {
         return cursorX == 0;
     }
+    public boolean checkMaxY()
+    {
+        return cursorY == maxY;
+    }
+    public boolean checkMinY()
+    {
+        return cursorY == 0;
+    }
     
     public void changeX(int x)
     {
         cursorX += x;
+    }
+    public void changeY(int y)
+    {
+        cursorY -= y;
     }
     public void move()
     {
